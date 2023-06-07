@@ -36,9 +36,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(String userId) {
-        log.info("request delete user is passed to database , userId:{}",userId);
+        log.info("request delete user is passed to database , userId:{}", userId);
         User user = this.userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFound(AppConstants.UNF_ID+userId));
+                .orElseThrow(() -> new ResourceNotFound(AppConstants.UNF_ID + userId));
 
         this.userRepository.delete(user);
         log.info("user deleted from database , userId:{}", userId);
@@ -47,9 +47,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(UserDto userDto, String userId) {
 
-        log.info(" request update user is passed to database with userId:{}",userId);
+        log.info(" request update user is passed to database with userId:{}", userId);
         User user = this.userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFound(AppConstants.UNF_ID+userId));
+                .orElseThrow(() -> new ResourceNotFound(AppConstants.UNF_ID + userId));
 
         user.setAbout(userDto.getAbout());
         user.setName(userDto.getName());
@@ -65,18 +65,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(String userId) {
-        log.info("Starting request to get single user from database with userId:{}",userId);
+        log.info("Starting request to get single user from database with userId:{}", userId);
         User user = this.userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFound(AppConstants.UNF_ID+userId));
+                .orElseThrow(() -> new ResourceNotFound(AppConstants.UNF_ID + userId));
         log.info("Completed request to get user with userId:{}", userId);
         return this.modelMapper.map(user, UserDto.class);
     }
 
     @Override
     public UserDto getUserByEmail(String userEmail) {
-        log.info("Starting request to get single user from database with Email:{}",userEmail);
+        log.info("Starting request to get single user from database with Email:{}", userEmail);
         User user = this.userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new ResourceNotFound(AppConstants.UNF_EMAIL+userEmail));
+                .orElseThrow(() -> new ResourceNotFound(AppConstants.UNF_EMAIL + userEmail));
         log.info("Completed request to get user with userEmail:{}", userEmail);
         return this.modelMapper.map(user, UserDto.class);
     }
@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getUserByName(String keyword) {
-        log.info("Starting request to get all users from database having name {}:",keyword);
+        log.info("Starting request to get all users from database having name {}:", keyword);
         List<User> users = this.userRepository.findAllByNameContaining(keyword);
         log.info("Completed request to get all users list with name:");
 
