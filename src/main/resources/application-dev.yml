@@ -1,5 +1,5 @@
 server:
-  port: 7800
+  port: 7200
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/eStore?allowPublicKeyRetrieval=true
