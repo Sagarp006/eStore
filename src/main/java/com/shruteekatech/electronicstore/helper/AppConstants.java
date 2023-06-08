@@ -16,7 +16,7 @@ public interface AppConstants {
 
     //Message If User is Deleted
     String USER_DEL="User Deleted Successfully ";
-    String GENDER_MSG="Pls Specify the Gender: Male or Female";
+    String GENDER_MSG="Specify the Gender: Male or Female";
     String PASS_PATTERN = "^[A-Za-z0-9 .#&@-]+$";
     String PASS_PATTERN_MSG="Password Must Contain Characters A-Z , a-z , 0-9 and special characters '.' '#' '&' '@' '-' ";
     String ABOUT_MSG ="Write Something about yourself" ;
