@@ -14,8 +14,8 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFound.class)
-    public ResponseEntity<ApiResponse> resourceNotFound(ResourceNotFound e) {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse> resourceNotFound(ResourceNotFoundException e) {
         return new ResponseEntity<>(ApiResponse.builder().message(e.getMessage())
                 .status(HttpStatus.NOT_FOUND).success(false).build(), HttpStatus.NOT_FOUND);
     }
@@ -23,8 +23,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> nonValidArgs(MethodArgumentNotValidException e) {
         Map<String, String> map = new HashMap<>();
-        e.getBindingResult().getFieldErrors()
-                .forEach(fieldError -> map.put(fieldError.getField(), fieldError.getDefaultMessage()));
+        e.getBindingResult().getFieldErrors().forEach(fieldError ->
+                        map.put(fieldError.getField(), //getting fields which have errors
+                                fieldError.getDefaultMessage()) //error messages
+        );
         return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
     }
 }
