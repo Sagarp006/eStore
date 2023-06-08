@@ -2,7 +2,7 @@ package com.shruteekatech.electronicstore.service.impl;
 
 import com.shruteekatech.electronicstore.dtos.UserDto;
 import com.shruteekatech.electronicstore.entities.User;
-import com.shruteekatech.electronicstore.exceptions.ResourceNotFound;
+import com.shruteekatech.electronicstore.exceptions.ResourceNotFoundException;
 import com.shruteekatech.electronicstore.helper.AppConstants;
 import com.shruteekatech.electronicstore.repositories.UserRepository;
 import com.shruteekatech.electronicstore.service.UserService;
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(String userId) {
         log.info("request delete user is passed to database , userId:{}", userId);
         User user = this.userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFound(AppConstants.UNF_ID + userId));
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.UNF_ID + userId));
 
         this.userRepository.delete(user);
         log.info("user deleted from database , userId:{}", userId);
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
         log.info(" request update user is passed to database with userId:{}", userId);
         User user = this.userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFound(AppConstants.UNF_ID + userId));
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.UNF_ID + userId));
 
         user.setAbout(userDto.getAbout());
         user.setName(userDto.getName());
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserById(String userId) {
         log.info("Starting request to get single user from database with userId:{}", userId);
         User user = this.userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFound(AppConstants.UNF_ID + userId));
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.UNF_ID + userId));
         log.info("Completed request to get user with userId:{}", userId);
         return this.modelMapper.map(user, UserDto.class);
     }
@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserByEmail(String userEmail) {
         log.info("Starting request to get single user from database with Email:{}", userEmail);
         User user = this.userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new ResourceNotFound(AppConstants.UNF_EMAIL + userEmail));
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.UNF_EMAIL + userEmail));
         log.info("Completed request to get user with userEmail:{}", userEmail);
         return this.modelMapper.map(user, UserDto.class);
     }
