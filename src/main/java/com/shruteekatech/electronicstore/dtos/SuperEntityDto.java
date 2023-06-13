@@ -14,7 +14,6 @@ import java.time.LocalDate;
 public class SuperEntityDto implements Serializable {
         private LocalDate createDate;
         private String createdBy;
-
         private LocalDate updateDate;
         private String updatedBy;
 
