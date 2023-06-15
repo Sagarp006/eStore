@@ -3,6 +3,7 @@ package com.shruteekatech.electronicstore.controllers;
 import com.shruteekatech.electronicstore.dtos.UserDto;
 import com.shruteekatech.electronicstore.helper.ApiResponse;
 import com.shruteekatech.electronicstore.helper.AppConstants;
+import com.shruteekatech.electronicstore.helper.PageableResponse;
 import com.shruteekatech.electronicstore.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,12 +95,17 @@ public class UserController {
      * @author sagar padwekar
      * @apiNote This Api Gets an all users available.
      */
-    @GetMapping("/")
-    public ResponseEntity<List<UserDto>> getAllUser() {
+    @GetMapping
+    public ResponseEntity<PageableResponse<UserDto>> getAllUser(
+            @RequestParam(required = false,defaultValue = "0") Integer pageNo,
+            @RequestParam(required = false,defaultValue = "5") Integer pageSize,
+            @RequestParam(required = false,defaultValue = "asc") String sortDi,  //sorting direction
+            @RequestParam(required = false,defaultValue = "name") String sortBy   //sort using name,email,id,etc.
+    ) {
         log.info("Starting request to get all users");
-        List<UserDto> users = this.userService.getAllUser();
+        this.userService.getAllUsers(pageNo, pageSize, sortDi, sortBy);
         log.info("Completed request to get all users list");
-        return new ResponseEntity<>(users, HttpStatus.FOUND);
+        return new ResponseEntity<>(HttpStatus.FOUND);
     }
 
     /**
@@ -129,4 +135,5 @@ public class UserController {
         return new ResponseEntity<>(ApiResponse.builder().message(AppConstants.USER_DEL)
                 .status(HttpStatus.OK).success(true).build(), HttpStatus.OK);
     }
+
 }
