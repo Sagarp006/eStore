@@ -27,6 +27,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> nonValidArgs(MethodArgumentNotValidException e) {
         Map<String, String> map = new HashMap<>();
         log.error("ArgumentNotValidException Occurred , provide valid arguments");
+
+        //getting all field errors from bindingResult and iterating using for loop
         e.getBindingResult().getFieldErrors().forEach(fieldError ->
                 map.put(fieldError.getField(), //getting fields which have errors
                         fieldError.getDefaultMessage()) //error messages

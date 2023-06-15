@@ -4,15 +4,21 @@ import com.shruteekatech.electronicstore.dtos.UserDto;
 import com.shruteekatech.electronicstore.entities.User;
 import com.shruteekatech.electronicstore.exceptions.ResourceNotFoundException;
 import com.shruteekatech.electronicstore.helper.AppConstants;
+import com.shruteekatech.electronicstore.helper.PageableResponse;
 import com.shruteekatech.electronicstore.repositories.UserRepository;
 import com.shruteekatech.electronicstore.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -82,10 +88,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getAllUser() {
-        log.info("Starting request to get all users from database");
-        List<User> users = this.userRepository.findAll();
-        log.info("Completed request to get all users list");
+    public PageableResponse<UserDto>
+              getAllUser(Integer pageNo, Integer pageSize, String sortDi, String sortBy) {
+
+        Sort sort = (sortDi.equalsIgnoreCase("desc")) ?
+                (Sort.by(sortDi).descending()) : (Sort.by(sortDi).ascending());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        Page<User> users = this.userRepository.findAll(pageable);
+        return null;
+    }
+
+    @Override
+    public List<UserDto>
+    getAllUsers(Integer pageNo, Integer pageSize, String sortDi, String sortBy) {
+        Sort sort = (sortDi.equalsIgnoreCase("desc")) ?
+                (Sort.by(sortDi).descending()) : (Sort.by(sortDi).ascending());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        Page<User> users = this.userRepository.findAll(pageable);
         return users.stream().map(user -> this.modelMapper.map(user, UserDto.class)).toList();
     }
 
