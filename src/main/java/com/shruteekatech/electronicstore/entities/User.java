@@ -16,16 +16,14 @@ import lombok.*;
 public class User extends SuperEntity {
     @Id
     private String id;
-    @NotEmpty
     @Column(name = "user_name")
     private String name;
-    @NotEmpty
     @Column(name = "user_password")
     private String password;
-    @Email
+
     @Column(name = "user_email",unique = true)
     private String email;
-    @NotEmpty
+
     @Column(name = "user_gender")
     private String gender;
     @Column(name = "user_about")

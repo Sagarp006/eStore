@@ -12,13 +12,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -89,29 +88,44 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PageableResponse<UserDto>
-              getAllUser(Integer pageNo, Integer pageSize, String sortDi, String sortBy) {
-
+    getAllUsers(Integer pageNo, Integer pageSize, String sortDi, String sortBy) {
+        log.info("Starting request to get all users from database");
         Sort sort = (sortDi.equalsIgnoreCase("desc")) ?
                 (Sort.by(sortDi).descending()) : (Sort.by(sortDi).ascending());
-        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-        Page<User> users = this.userRepository.findAll(pageable);
-        return null;
+        PageRequest page = PageRequest.of(pageNo, pageSize, sort);
+        Page<User> users = this.userRepository.findAll(page);
+        List<UserDto> list = users.stream().map(user -> this.modelMapper.map(user, UserDto.class)).toList();
+        PageableResponse<UserDto> response = new PageableResponse<>();//PageResponse object
+        response.setPageNo(users.getNumber());
+        response.setPageSize(users.getSize());
+        response.setContent(list);
+        response.setTotalPages(users.getTotalPages());
+        response.setTotalElement(users.getTotalElements());
+        response.setLastPage(users.isLast());
+//        PageableResponse response1 = PageableResponse.builder().content(Collections.singletonList(list)).pageNo(users.getNumber())
+//                .pageSize(users.getSize())
+//                .totalPages(users.getTotalPages())
+//                .totalElement(users.getTotalElements())
+//                .lastPage(users.isLast()).build();
+        return response;
     }
 
     @Override
-    public List<UserDto>
-    getAllUsers(Integer pageNo, Integer pageSize, String sortDi, String sortBy) {
+    public List<UserDto> getAllUser(Integer pageNo, Integer pageSize, String sortDi, String sortBy) {
+        log.info("Starting request to get all users from database");
         Sort sort = (sortDi.equalsIgnoreCase("desc")) ?
                 (Sort.by(sortDi).descending()) : (Sort.by(sortDi).ascending());
-        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-        Page<User> users = this.userRepository.findAll(pageable);
-        return users.stream().map(user -> this.modelMapper.map(user, UserDto.class)).toList();
+        PageRequest page = PageRequest.of(pageNo, pageSize, sort);
+        Page<User> users = this.userRepository.findAll(page);
+        List<UserDto> list = users.stream().map(user -> this.modelMapper.map(user, UserDto.class)).toList();
+
+        return list;
     }
 
     @Override
     public List<UserDto> getUserByName(String keyword) {
         log.info("Starting request to get all users from database having name {}:", keyword);
-        List<User> users = this.userRepository.findAllByNameContaining(keyword);
+        List<User> users = this.userRepository.findByNameContaining(keyword);
         log.info("Completed request to get all users list with name:");
 
         return users.stream().map(user -> this.modelMapper.map(user, UserDto.class)).toList();

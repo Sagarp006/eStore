@@ -1,6 +1,7 @@
 package com.shruteekatech.electronicstore.dtos;
 
 import com.shruteekatech.electronicstore.helper.AppConstants;
+import com.shruteekatech.electronicstore.validations.ImageNameCheck;
 import lombok.*;
 
 import javax.validation.constraints.Email;
@@ -26,5 +27,6 @@ public class UserDto extends SuperEntityDto {
     private String gender;
     @NotEmpty(message = AppConstants.ABOUT_MSG)
     private String about;
+    @ImageNameCheck
     private String image;
 }

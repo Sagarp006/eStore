@@ -95,17 +95,17 @@ public class UserController {
      * @author sagar padwekar
      * @apiNote This Api Gets an all users available.
      */
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<PageableResponse<UserDto>> getAllUser(
-            @RequestParam(required = false,defaultValue = "0") Integer pageNo,
-            @RequestParam(required = false,defaultValue = "5") Integer pageSize,
-            @RequestParam(required = false,defaultValue = "asc") String sortDi,  //sorting direction
-            @RequestParam(required = false,defaultValue = "name") String sortBy   //sort using name,email,id,etc.
+            @RequestParam(value = "pageNo",required = false,defaultValue = "0") Integer pageNo,
+            @RequestParam(value = "pageSize",required = false,defaultValue = "5") Integer pageSize,
+            @RequestParam(value = "sortDi",required = false,defaultValue = "asc") String sortDi,  //sorting direction
+            @RequestParam(value = "sortBy",required = false,defaultValue = "name") String sortBy   //sort using name,email,id,etc.
     ) {
         log.info("Starting request to get all users");
-        this.userService.getAllUsers(pageNo, pageSize, sortDi, sortBy);
+        PageableResponse<UserDto> users = this.userService.getAllUsers(pageNo, pageSize, sortDi, sortBy);
         log.info("Completed request to get all users list");
-        return new ResponseEntity<>(HttpStatus.FOUND);
+        return new ResponseEntity<>(users,HttpStatus.FOUND);
     }
 
     /**

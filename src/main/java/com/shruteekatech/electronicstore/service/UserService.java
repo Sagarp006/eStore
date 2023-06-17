@@ -2,8 +2,6 @@ package com.shruteekatech.electronicstore.service;
 
 import com.shruteekatech.electronicstore.dtos.UserDto;
 import com.shruteekatech.electronicstore.helper.PageableResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -24,7 +22,8 @@ public interface UserService {
     UserDto getUserByEmail(String userEmail);
 
     //get all user
-    PageableResponse<UserDto> getAllUser(Integer pageNo, Integer pageSize, String sortDi, String sortBy);
+    PageableResponse<UserDto> getAllUsers(Integer pageNo, Integer pageSize, String sortDi, String sortBy);
+    List<UserDto> getAllUser(Integer pageNo, Integer pageSize, String sortDi, String sortBy);
 
     //search user by keyword
     List<UserDto> getUserByName(String keyword);
