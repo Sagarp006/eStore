@@ -7,9 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public interface FileService {
+    String uploadFile(MultipartFile file,String path) throws IOException;
+    InputStream getResource(String path,String name) throws FileNotFoundException;
 
-    String uploadImage(MultipartFile file, String path) throws IOException;
-
-    InputStream getResource(String path, String name) throws FileNotFoundException;
 
 }

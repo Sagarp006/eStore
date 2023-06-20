@@ -4,14 +4,18 @@ import com.shruteekatech.electronicstore.dtos.UserDto;
 import com.shruteekatech.electronicstore.helper.ApiResponse;
 import com.shruteekatech.electronicstore.helper.AppConstants;
 import com.shruteekatech.electronicstore.helper.PageableResponse;
+import com.shruteekatech.electronicstore.service.FileService;
 import com.shruteekatech.electronicstore.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -28,7 +32,10 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private FileService fileService;
+    @Value("${imagePath}")
+    private String imageUploadPath;
 
     /**
      * @param userDto The entity of the User.
@@ -41,7 +48,7 @@ public class UserController {
         log.info("Starting request to create user");
         UserDto user = this.userService.createUser(userDto);
         log.info("user created successfully ");
-        return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
 
@@ -97,15 +104,15 @@ public class UserController {
      */
     @GetMapping("/")
     public ResponseEntity<PageableResponse<UserDto>> getAllUser(
-            @RequestParam(value = "pageNo",required = false,defaultValue = "0") Integer pageNo,
-            @RequestParam(value = "pageSize",required = false,defaultValue = "5") Integer pageSize,
-            @RequestParam(value = "sortDi",required = false,defaultValue = "asc") String sortDi,  //sorting direction
-            @RequestParam(value = "sortBy",required = false,defaultValue = "name") String sortBy   //sort using name,email,id,etc.
+            @RequestParam(value = "pageNo", required = false, defaultValue = "0") Integer pageNo,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "5") Integer pageSize,
+            @RequestParam(value = "sortDi", required = false, defaultValue = "asc") String sortDi,  //sorting direction
+            @RequestParam(value = "sortBy", required = false, defaultValue = "name") String sortBy   //sort using name,email,id,etc.
     ) {
         log.info("Starting request to get all users");
         PageableResponse<UserDto> users = this.userService.getAllUsers(pageNo, pageSize, sortDi, sortBy);
         log.info("Completed request to get all users list");
-        return new ResponseEntity<>(users,HttpStatus.FOUND);
+        return new ResponseEntity<>(users, HttpStatus.FOUND);
     }
 
     /**
@@ -118,7 +125,7 @@ public class UserController {
         log.info("Starting request to get all users containing name:{}", name);
         List<UserDto> users = this.userService.getUserByName(name);
         log.info("Completed request to get all users list with name:{}", name);
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return new ResponseEntity<>(users, HttpStatus.FOUND);
     }
 
 
@@ -132,8 +139,22 @@ public class UserController {
         log.info("Starting request to delete user with userId:{}", userId);
         this.userService.deleteUser(userId);
         log.info("Completed request to delete user with userId:{}", userId);
-        return new ResponseEntity<>(ApiResponse.builder().message(AppConstants.USER_DEL)
-                .status(HttpStatus.OK).success(true).build(), HttpStatus.OK);
+        ApiResponse apiResponse = ApiResponse.builder().message(AppConstants.USER_DEL)
+                .status(HttpStatus.OK).success(true).build();
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+    @PostMapping("/uploadImage/{userId}")
+    public ResponseEntity<ApiResponse> uploadUserImage(
+            @RequestParam(value = "userImage") MultipartFile userImage, @PathVariable String userId) throws IOException {
+
+        String imageName = this.fileService.uploadFile(userImage, imageUploadPath);
+        UserDto user = this.userService.getUserById(userId);
+        user.setImage(imageName);
+        this.userService.updateUser(user,userId);
+        ApiResponse apiResponse = ApiResponse.builder()
+                .imageName(imageName).message(AppConstants.IMG_UPLOADED).success(true).status(HttpStatus.CREATED).build();
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+    }
 }
+

@@ -23,6 +23,7 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND).success(false).build(), HttpStatus.NOT_FOUND);
     }
 
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> nonValidArgs(MethodArgumentNotValidException e) {
         Map<String, String> map = new HashMap<>();

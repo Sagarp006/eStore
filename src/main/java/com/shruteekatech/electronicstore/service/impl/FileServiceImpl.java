@@ -1,62 +1,51 @@
 package com.shruteekatech.electronicstore.service.impl;
 
-import com.shruteekatech.electronicstore.exceptions.BadRequestApiException;
+import com.shruteekatech.electronicstore.exceptions.ResourceNotFoundException;
+import com.shruteekatech.electronicstore.helper.AppConstants;
 import com.shruteekatech.electronicstore.service.FileService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.UUID;
 
+@Service
 @Slf4j
 public class FileServiceImpl implements FileService {
+
     @Override
-    public String uploadImage(MultipartFile file, String path) throws IOException {
-
-        log.info(" Request Starting for  upload image  ");
-        //get original filename
+    public String uploadFile(MultipartFile file, String path) throws IOException {
+        //original name:- abc.png
         String originalFilename = file.getOriginalFilename();
-        log.info("FileName :{}", originalFilename);
 
-        //random Image name generate
-        String randomFileName = UUID.randomUUID().toString();
+        //extracting extension from original file name which is after last "." eg:- ".png" , ".jpg"
+        String ext = Objects.requireNonNull(originalFilename).substring(originalFilename.lastIndexOf("."));
 
-        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String fileNameWithExtension = randomFileName.concat(extension);
+        // generating random string with extension eg:- hrf789-378nhs-jsj92.jpg
+        String imageName = UUID.randomUUID().toString().concat(ext);
 
-        //full path
-        String fullPathWithFileName = path.concat(fileNameWithExtension) ;
+        //creating image path file with name and extension, eg:  img/hrf789-378nhs-jsj92.png
+        String imageFileWithPathName = path.concat(File.separator).concat(imageName);
+        if (ext.equalsIgnoreCase(".png") || ext.equalsIgnoreCase(".jpg") || ext.equalsIgnoreCase(".jpeg")) {
 
-        log.info(" full image path :{}", fullPathWithFileName);
-        if (extension.equalsIgnoreCase(".png") || extension.equalsIgnoreCase(".jpg") || extension.equalsIgnoreCase(".jpeg")) {
-
-            log.info(" file extension :{}", extension);
-            //file Save
-
-            File f = new File(path);
-
-            if (!f.exists()) {
-                //folder creation up to multiple level
-                f.mkdirs();
+            File folder = new File(path);  //new file object
+            if (!folder.exists()) {   //checking if folder exist
+                folder.mkdirs();    //creating folder if it doesn't exist
             }
-            //upload Image
-            Files.copy(file.getInputStream(), Paths.get(fullPathWithFileName));
-
-            return fileNameWithExtension;
+            Files.copy(file.getInputStream(), Paths.get(imageFileWithPathName));  //copying file to given path
+            return imageName;
         } else {
-            throw new BadRequestApiException(" File with this " + extension + " not allowed ...");
+            throw new ResourceNotFoundException(AppConstants.IMG_NA);
         }
-
-
     }
 
     @Override
     public InputStream getResource(String path, String name) throws FileNotFoundException {
-        log.info(" Request Starting to serve image ");
-        String fullPath = path + File.separator + name;
-        InputStream inputStream = new FileInputStream(fullPath);
-        return inputStream;
+        String fullPath = path.concat(File.separator).concat(name);
+        return new FileInputStream(fullPath);
     }
 }
