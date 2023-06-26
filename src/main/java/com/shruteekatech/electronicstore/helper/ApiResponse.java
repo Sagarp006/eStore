@@ -6,8 +6,7 @@ import org.springframework.http.HttpStatus;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class ApiResponse {
+public final class ApiResponse {
     private String message;
     private HttpStatus status;
     private Boolean success;
