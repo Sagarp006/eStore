@@ -17,8 +17,8 @@ import java.util.Date;
 @Builder
 public class Product {
     @Id
-    private String productId;
-    @Column(name = "product_title", nullable = false)
+    private String id;
+    @Column(name = "product_title")
     private String title;
     @Column(name = "product_description", length = 10000)
     private String description;

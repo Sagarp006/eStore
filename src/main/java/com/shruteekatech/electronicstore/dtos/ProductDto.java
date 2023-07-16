@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Setter
@@ -14,19 +16,20 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductDto {
-    private String productId;
+    private String id;
+    @NotBlank(message = "enter title")
     private String title;
-    @NotBlank
-    @Min(value = 5)
+
     private String description;
+    @NotNull(message = "enter the price of a product")
     private Float price;
     private Float discountedPrice;
-    @NotBlank
+    @Min(value = 0,message = "enter the quantity of the product")
     private Integer quantity;
     private Date addedDate;
-    @NotBlank
+    @NotNull
     private Boolean live;
-    @NotBlank
+    @NotNull
     private Boolean stock;
     private String imageName;
 }
