@@ -10,42 +10,51 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Objects;
 import java.util.UUID;
+import java.util.function.UnaryOperator;
+
 
 @Service
 @Slf4j
 public class FileServiceImpl implements FileService {
-
     @Override
-    public String uploadFile(MultipartFile file, String path) throws IOException {
-        //original name:- abc.png
-        String originalFilename = file.getOriginalFilename();
+        public String uploadFile(MultipartFile file, String path) throws IOException {
+            log.info("image is being uploaded");
 
-        //extracting extension from original file name which is after last "." eg:- ".png" , ".jpg"
-        String ext = Objects.requireNonNull(originalFilename).substring(originalFilename.lastIndexOf("."));
+            String ext = getExt.apply(file.getOriginalFilename());
 
-        // generating random string with extension eg:- hrf789-378nhs-jsj92.jpg
-        String imageName = UUID.randomUUID().toString().concat(ext);
+            if (ext.matches("\\.(png|jpg|jpeg)$")) {
+                //generating imageName eg:- 7yjw93-j94093.png
+                String imageName = UUID.randomUUID() + ext;
 
-        //creating image path file with name and extension, eg:  img/hrf789-378nhs-jsj92.png
-        String imageFileWithPathName = path.concat(File.separator).concat(imageName);
-        if (ext.equalsIgnoreCase(".png") || ext.equalsIgnoreCase(".jpg") || ext.equalsIgnoreCase(".jpeg")) {
+                //generating path eg:- image/category/7yjw93-j94093.png
+                String imageFileWithPathName = path + imageName;
 
-            File folder = new File(path);  //new file object
-            if (!folder.exists()) {   //checking if folder exist
-                folder.mkdirs();    //creating folder if it doesn't exist
+                //uploading file to a given path
+                Files.copy(file.getInputStream(), Paths.get(imageFileWithPathName));
+                log.info("image uploaded successfully");
+                return imageName;
+            } else {
+                log.info("Selected File is Not an Image");
+                throw new ResourceNotFoundException(AppConstants.IMG_NA);
             }
-            Files.copy(file.getInputStream(), Paths.get(imageFileWithPathName));  //copying file to given path
-            return imageName;
-        } else {
-            throw new ResourceNotFoundException(AppConstants.IMG_NA);
+        }
+    @Override
+    public InputStream getResource(String path, String name) {
+        String fullPath = path.concat(File.separator).concat(name);
+        try {
+            return new FileInputStream(fullPath);
+        } catch (FileNotFoundException e) {
+            throw new ResourceNotFoundException(e.getMessage());
         }
     }
 
-    @Override
-    public InputStream getResource(String path, String name) throws FileNotFoundException {
-        String fullPath = path.concat(File.separator).concat(name);
-        return new FileInputStream(fullPath);
-    }
+    // @returns image extension eg:- .png
+    private final UnaryOperator<String> getExt = originalFilename -> {
+        if (originalFilename == null || originalFilename.isEmpty()) {
+            throw new ResourceNotFoundException("File is empty");
+        }
+        return originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+    };
 }
+
