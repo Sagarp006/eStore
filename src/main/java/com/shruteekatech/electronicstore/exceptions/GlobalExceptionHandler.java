@@ -1,10 +1,9 @@
 package com.shruteekatech.electronicstore.exceptions;
 
-
-import com.shruteekatech.electronicstore.helper.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,12 +16,23 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiResponse> resourceNotFound(ResourceNotFoundException e) {
+    public ResponseEntity<Map<String, Object>> resourceNotFound(ResourceNotFoundException e) {
         log.error("ResourceNotFoundException Occurred , Resource is not available in database");
-        return new ResponseEntity<>(ApiResponse.builder().message(e.getMessage()) //error message
-                .status(HttpStatus.NOT_FOUND).success(false).build(), HttpStatus.NOT_FOUND);
+        Map<String, Object> response = Map.of("message", e.getMessage(), "status", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(InvalidFileException.class)
+    public ResponseEntity<Map<String, Object>> resourceNotFound(InvalidFileException e) {
+        Map<String, Object> response = Map.of("message", e.getMessage(), "status", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+    public ResponseEntity<String> mediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException e) {
+        log.error("The request handler cannot generate a acceptable response ");
+        return ResponseEntity.ok(e.getMessage());
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> nonValidArgs(MethodArgumentNotValidException e) {
@@ -34,6 +44,6 @@ public class GlobalExceptionHandler {
                 map.put(fieldError.getField(), //getting fields which have errors
                         fieldError.getDefaultMessage()) //error messages
         );
-        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
     }
 }
