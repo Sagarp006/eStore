@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
@@ -14,6 +15,7 @@ import javax.persistence.Table;
 @Setter
 @Builder
 public class Category {
+    @Id
     private String id;
     @Column(name = "category_title")
     private String title;
