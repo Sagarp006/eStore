@@ -17,7 +17,7 @@ import javax.persistence.Table;
 public class Category {
     @Id
     private String id;
-    @Column(name = "category_title")
+    @Column(name = "category_title",unique = true)
     private String title;
     @Column(name = "description")
     private String description;
