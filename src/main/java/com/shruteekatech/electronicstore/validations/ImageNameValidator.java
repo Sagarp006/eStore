@@ -9,10 +9,6 @@ public class ImageNameValidator implements ConstraintValidator<ImageNameCheck,St
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         log.info("Message from isValid");
-        if (value.isBlank()){
-            return false;
-        }else {
-            return true;
-        }
+        return !value.isBlank();
     }
 }
