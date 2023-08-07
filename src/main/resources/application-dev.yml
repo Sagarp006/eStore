@@ -5,14 +5,17 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   datasource:
-    url: jdbc:mysql://localhost:3306/eStore?allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/eStore_dev?allowPublicKeyRetrieval=true
     username: root
     password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-
 # noinspection undefined
-imagePath: images/user/
+
+image-path-user: "dev/images/user/"
+# noinspection undefined
+image-path-category: "dev/images/category/"
+# noinspection undefined
+image-path-product: "dev/images/product/"
